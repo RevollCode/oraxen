@@ -82,7 +82,46 @@ public class ResourcesManager {
             if (!Settings.CUSTOM_ARMOR_SHADER_GENERATE_CUSTOM_TEXTURES.toBool() && entry.getName().startsWith("pack/textures/models/armor/leather_layer")) return;
             plugin.saveResource(entry.getName(), false);
         }
+        //if (entry.getName().startsWith("items/")) extractVersionSpecificItemConfig(entry);
+        else plugin.saveResource(entry.getName(), true);
     }
+
+    /*private void extractVersionSpecificItemConfig(ZipEntry entry) {
+        if (!entry.getName().startsWith("items/")) return;
+        if (!entry.getName().endsWith(".yml")) return;
+        if (!VersionUtil.atOrAbove("1.20.5")) {
+            plugin.saveResource(entry.getName(), true);
+            return;
+        }
+
+        try(InputStream inputStream = plugin.getResource(entry.getName())) {
+            YamlConfiguration itemYaml = OraxenYaml.loadConfiguration(new InputStreamReader(inputStream));
+            for (String itemId : itemYaml.getKeys(false)) {
+                ConfigurationSection itemSection = itemYaml.getConfigurationSection(itemId);
+                if (itemSection == null) continue;
+
+                ConfigurationSection mechanicSection = itemSection.getConfigurationSection("Mechanics");
+                if (mechanicSection == null) continue;
+
+                ConfigurationSection componentSection = itemSection.getConfigurationSection("Components");
+                if (componentSection == null) componentSection = itemSection.createSection("Components");
+
+                Object durability = mechanicSection.get("durability.value");
+                mechanicSection.set("durability", null);
+                componentSection.set("durability", durability);
+
+                if (mechanicSection.getKeys(false).isEmpty()) itemSection.set("Mechanics", null);
+                if (componentSection.getKeys(false).isEmpty()) itemSection.set("Components", null);
+            }
+            File itemFile = plugin.getDataFolder().toPath().resolve(entry.getName()).toFile();
+
+            if (VersionUtil.atOrAbove("1.20.5"))
+                FileUtils.writeStringToFile(itemFile, itemYaml.saveToString().replace("displayname", "itemname"), StandardCharsets.UTF_8);
+            else itemYaml.save(itemFile);
+        } catch (Exception e) {
+            plugin.saveResource(entry.getName(), true);
+        }
+    }*/
 
     private void extractFileAccordingToExtension(ZipEntry entry, String folder, String fileExtension) {
         boolean isSuitable = entry.getName().startsWith(folder + "/") && entry.getName().endsWith("." + fileExtension);

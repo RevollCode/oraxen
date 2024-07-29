@@ -1,11 +1,14 @@
 package io.th0rgal.oraxen.utils.customarmor;
 
+import io.th0rgal.oraxen.OraxenPlugin;
 import io.th0rgal.oraxen.api.OraxenItems;
 import io.th0rgal.oraxen.config.Settings;
 import io.th0rgal.oraxen.utils.InventoryUtils;
+import io.th0rgal.oraxen.utils.VersionUtil;
 import io.th0rgal.oraxen.utils.armorequipevent.ArmorEquipEvent;
 import io.th0rgal.oraxen.utils.logs.Logs;
 import net.kyori.adventure.key.Key;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -34,6 +37,18 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Locale;
 
 public class CustomArmorListener implements Listener {
+
+    public CustomArmorListener() {
+        if (!VersionUtil.isPaperServer()) return;
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onPlayerPickup(PlayerAttemptPickupItemEvent event) {
+                ItemStack item = event.getItem().getItemStack();
+                setVanillaArmorTrim(item);
+                event.getItem().setItemStack(item);
+            }
+        }, OraxenPlugin.get());
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCustomArmorRepair(PrepareAnvilEvent event) {
@@ -79,13 +94,6 @@ public class CustomArmorListener implements Listener {
     public void updateVanillaArmor(PlayerJoinEvent event) {
         for (ItemStack item : event.getPlayer().getInventory().getContents())
             setVanillaArmorTrim(item);
-    }
-
-    @EventHandler
-    public void onPlayerPickup(PlayerAttemptPickupItemEvent event) {
-        ItemStack item = event.getItem().getItemStack();
-        setVanillaArmorTrim(item);
-        event.getItem().setItemStack(item);
     }
 
     @EventHandler
