@@ -25,9 +25,6 @@ jobs:
       - name: List files in build/libs
         run: ls -la build/libs
 
-      - name: List files in pluginPath
-        run: ls -la path/to/pluginPath
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
